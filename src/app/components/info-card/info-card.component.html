@@ -1,0 +1,22 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title *ngIf="item.title">
+      <span class="label">Title:</span> {{item.title}}</mat-card-title>
+    <mat-card-subtitle *ngIf="item.locations">
+      <span class="label">Address:</span> {{item.locations}}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="item.actor_1" class="actor">
+      <span class="label">Actor 1</span>:
+      <span>{{ item.actor_1 }}</span>
+    </div>
+    <div *ngIf="item.actor_2" class="actor">
+      <span class="label">Actor 2</span>:
+      <span>{{ item.actor_2 }}</span>
+    </div>
+    <div *ngIf="item.actor_3" class="actor">
+      <span class="label">Actor 3</span>:
+      <span>{{ item.actor_3 }}</span>
+    </div>
+  </mat-card-content>
+</mat-card>

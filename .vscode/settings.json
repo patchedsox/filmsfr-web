@@ -1,0 +1,10 @@
+{
+  "tslint.autoFixOnSave": true,
+  "cSpell.words": [
+    "Injectable",
+    "bbox",
+    "goldengate",
+    "tassign",
+    "waypoints"
+  ]
+}

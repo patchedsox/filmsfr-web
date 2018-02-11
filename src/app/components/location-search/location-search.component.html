@@ -1,0 +1,13 @@
+<mat-form-field [floatLabel]="'never'">
+  <mat-label>Search locations...</mat-label>
+  <input type="text" aria-label="Locations" matInput [formControl]="searchInput" [matAutocomplete]="auto" />
+  <mat-autocomplete #auto [displayWith]="displayFn">
+    <mat-option *ngFor="let option of searchResults | async" [value]="option">
+      <div class="option">
+        <app-info-card [item]="option"></app-info-card>
+      </div>
+    </mat-option>
+    <div class="divider"></div>
+    <button class="loadMore" mat-button (click)="loadMore()">Load More</button>
+  </mat-autocomplete>
+</mat-form-field>

@@ -6,6 +6,11 @@
     "module": "es2015",
     "types": []
   },
+  "include": [
+    "../types/**/*.ts",
+    "./**/*.ts",
+    "../node_modules/agm-direction/src/agm-direction.module.ts"
+  ],
   "exclude": [
     "test.ts",
     "**/*.spec.ts"

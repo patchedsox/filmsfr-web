@@ -1,0 +1,65 @@
+.sideNav {
+  height: 100vh;
+  width: 100vw;
+  mat-drawer {
+    overflow: visible !important;
+    visibility: visible !important;
+    background: #eee;   
+    width: 350px; 
+  }
+  .logo {
+    height: 200px;
+  }
+  .divider {
+    height: 1px;
+    width: 100%;
+    background: #fff;
+  }
+  .menu {
+    display: flex;
+    overflow-y: auto;
+    flex-direction: column;
+  }
+  .showHideButton {
+    position: absolute;
+    z-index: 1;
+    height: 41px;
+    width: 30px;
+    top: 0;
+    left: 350px;
+    position: absolute;
+    background: #eeeeee;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 2;
+  
+    mat-icon {
+      width: 24px;
+      height: 24px;
+      font-size: 27px;
+      background: transparent;
+      margin: auto;
+      position: absolute;
+      top: 9px;
+      -webkit-transition-duration: 0.4s;
+      transition-duration: 0.4s;
+
+      &.close {
+        transform: rotate(-180deg);
+        -o-transform: rotate(-180deg);
+        -webkit-transform: rotate(-180deg);
+        -moz-transform: rotate(-180deg);
+      }
+    }
+  }
+}
+
+.logo {
+  height: 120px;
+  width: calc(100% - 90px);
+  margin: auto;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position-y: center !important;
+  background-position-x: center !important;
+}

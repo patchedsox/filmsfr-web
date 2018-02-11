@@ -1,0 +1,21 @@
+<mat-drawer-container class="sideNav">
+  <mat-drawer #drawer>
+    <div class="logo">
+      <div class="logo" [ngStyle]="{'background': 'url(/assets/goldengate.png)'}">
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="menu">
+      <app-route-planner></app-route-planner>
+    </div>
+
+    <div (click)="drawer.toggle()" class="showHideButton">
+      <mat-icon [class.close]="!drawer.opened">
+        keyboard_arrow_left
+      </mat-icon>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <app-locations></app-locations>
+  </mat-drawer-content>
+</mat-drawer-container>

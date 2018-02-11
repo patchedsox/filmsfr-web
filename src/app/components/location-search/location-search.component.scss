@@ -1,0 +1,28 @@
+mat-form-field {
+  width: 100%;
+  margin-bottom: -5px;
+}
+
+mat-option {
+  .labe {
+    font-weight: 500;
+  }
+  height: unset;
+  padding: 2px 0;
+  .option {
+    line-height: 24px !important;
+    .actor {
+      display: block;
+    }
+  }
+}
+
+.divider {
+  height: 1px;
+  background: rgba(128, 128, 128, 0.3);
+}
+
+.loadMore {
+  width: 100% !important;
+  height: 45px !important;
+}

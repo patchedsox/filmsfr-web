@@ -1,0 +1,24 @@
+.btn {
+  padding: 10px 20px;
+  button {
+    width: 100%;
+  }
+}
+
+.wrapper {
+  overflow-y: auto;
+  height: calc(100vh - 257px);
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+mat-panel-title {
+  font-size: 13px;
+}
+
+mat-panel-description {
+  font-size: 13px;
+}

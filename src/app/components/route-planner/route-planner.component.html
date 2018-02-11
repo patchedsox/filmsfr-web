@@ -1,0 +1,28 @@
+<div class="btn">
+  <button (click)="solveRoute()" mat-raised-button>Plan a route from most optimal 20 points</button>
+</div>
+<div class="wrapper">
+  <div class="results">
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let location of route | async; let i = index" (opened)="selectLocation(i)" (closed)="unselectLocation(i)">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{location.title}}
+          </mat-panel-title>
+          <mat-panel-description>
+            {{location.locations}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div>
+          {{location.actor_1}}
+        </div>
+        <div>
+          {{location.actor_2}}
+        </div>
+        <div>
+          {{location.actor_3}}
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

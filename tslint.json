@@ -16,6 +16,7 @@
     },
     "eofline": true,
     "forin": true,
+    "no-any": true,
     "import-blacklist": [
       true,
       "rxjs",
