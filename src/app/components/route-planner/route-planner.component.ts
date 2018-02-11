@@ -3,9 +3,9 @@ import { Input } from '@angular/core';
 import { FilmLocationSchema, SolveRoutingProblem } from 'goldengate24k';
 import { select } from '@angular-redux/store';
 import { Observable } from 'rxjs/Observable';
-import { LatLngLiteral } from '@agm/core/services/google-maps-types';
 import { AppActions } from '../../app.store-actions';
 import { Subject } from 'rxjs/Subject';
+import { LngLat } from 'mapbox-gl';
 
 @Component({
   selector: 'app-route-planner',
@@ -13,7 +13,7 @@ import { Subject } from 'rxjs/Subject';
   styleUrls: ['./route-planner.component.scss']
 })
 export class RoutePlannerComponent implements OnInit {
-  @select(['currentCenter']) currentCenter: Observable<LatLngLiteral>;
+  @select(['currentCenter']) currentCenter: Observable<LngLat>;
 
   route = Observable.of(<FilmLocationSchema[]>[]);
   click: Subject<void> = new Subject();
@@ -26,7 +26,7 @@ export class RoutePlannerComponent implements OnInit {
       .switchMap(center => {
         return this.solveRouteObs(center);
       })
-      .map(c => c.value.locations);
+      .map(c => c.value.locationsWithRouteCoordinates);
   }
 
   solveRoute() {
@@ -41,7 +41,7 @@ export class RoutePlannerComponent implements OnInit {
     this.appActions.unselectLocation(index);
   }
 
-  solveRouteObs(center: LatLngLiteral) {
+  solveRouteObs(center: LngLat) {
     return Observable.fromPromise(new SolveRoutingProblem({
       coordinates: center
     }).send()

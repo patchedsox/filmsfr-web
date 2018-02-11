@@ -3,7 +3,7 @@ import { AnyAction } from 'redux';
 import { FilmLocationSchema, SolveRoutingProblemResponse } from 'goldengate24k';
 import { NgRedux } from '@angular-redux/store';
 import { AppState } from './app.store';
-import { LatLngLiteral } from '@agm/core/services/google-maps-types';
+import { LngLat } from 'mapbox-gl';
 
 @Injectable()
 export class AppActions {
@@ -21,7 +21,7 @@ export class AppActions {
   solveRoute(data: SolveRoutingProblemResponse) {
     this.ngRedux.dispatch({ type: AppActions.SOLVE_ROUTE, value: data });
   }
-  setCenter(data: LatLngLiteral) {
+  setCenter(data: LngLat) {
     this.ngRedux.dispatch({ type: AppActions.SET_CURRENT_CENTER, value: data });
   }
   selectLocation(data: number) {

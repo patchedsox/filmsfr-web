@@ -13,7 +13,9 @@ export class HomeComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.drawer.mode = 'push';
+    this.drawer.mode = 'over';
+    this.drawer.disableClose = true;
+    this.drawer.open();
   }
 
 }

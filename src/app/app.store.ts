@@ -1,25 +1,21 @@
 import { Action, AnyAction } from 'redux';
 import { AppActions } from './app.store-actions';
 import { FilmLocationSchema, SolveRoutingProblemResponse } from 'goldengate24k';
-import { LatLngLiteral } from '@agm/core';
 import { tassign } from 'tassign';
+import { LngLat } from 'mapbox-gl';
 
 export interface AppState {
-  currentCenter: LatLngLiteral;
+  currentCenter: LngLat;
   currentLocations: Array<FilmLocationSchema & { selected: boolean }>;
   currentRouteSolution: SolveRoutingProblemResponse;
 }
 
 export const INITIAL_STATE: AppState = {
-  currentCenter: { lng: 0, lat: 0 },
+  currentCenter: { lng: 0, lat: 0 } as any,
   currentLocations: [],
   currentRouteSolution: {
-    locations: [],
-    route: {
-      waypoints: [],
-      routes: []
-    }
-  }
+    locationsWithRouteCoordinates: []
+  },
 };
 
 // tslint:disable-next-line:no-any
@@ -36,7 +32,6 @@ export function rootReducer(lastState: AppState, action: AnyAction): AppState | 
       return tassign(
         lastState,
         {
-          currentLocations: action.value.locations,
           currentRouteSolution: action.value
         }
       );

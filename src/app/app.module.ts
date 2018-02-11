@@ -41,7 +41,6 @@ import {
   MatTooltipModule
 } from '@angular/material';
 
-import { AgmCoreModule, GoogleMapsAPIWrapper, MapsAPILoader } from '@agm/core';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -59,6 +58,7 @@ import { RoutePlannerComponent } from './components/route-planner/route-planner.
 import { NgReduxModule, NgRedux } from '@angular-redux/store';
 import { AppActions } from './app.store-actions';
 import { AppState, rootReducer, INITIAL_STATE } from './app.store';
+import { MapboxComponent } from './components/mapbox/mapbox.component';
 
 @NgModule({
   declarations: [
@@ -68,14 +68,11 @@ import { AppState, rootReducer, INITIAL_STATE } from './app.store';
     LocationSearchComponent,
     InfoCardComponent,
     RoutePlannerComponent,
+    MapboxComponent,
   ],
   imports: [
     FormsModule,
     ReactiveFormsModule,
-
-    AgmCoreModule.forRoot({
-      apiKey: environment.googleApiKey
-    }),
 
     NgReduxModule,
     BrowserModule,
@@ -122,7 +119,6 @@ import { AppState, rootReducer, INITIAL_STATE } from './app.store';
   providers: [
     GoldenGate,
     GeoHelpers,
-    GoogleMapsAPIWrapper,
     AppActions
   ],
   bootstrap: [

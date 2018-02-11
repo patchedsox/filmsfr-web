@@ -22,3 +22,17 @@ mat-panel-title {
 mat-panel-description {
   font-size: 13px;
 }
+
+mat-panel-title {
+  max-width: 150px;
+  min-width: 150px;
+  span {
+    margin-right: 10px;
+    font-weight: 500;
+  }
+}
+
+mat-panel-description {
+  max-width: 120px;
+  min-width: 120px;
+}

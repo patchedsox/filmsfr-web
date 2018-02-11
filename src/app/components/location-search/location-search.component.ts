@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { FilmLocationSchema, SearchLocations } from 'goldengate24k';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
 
 @Component({
   selector: 'app-location-search',
@@ -19,11 +20,11 @@ export class LocationSearchComponent implements OnInit, OnDestroy {
   searchInput: FormControl;
   skip: BehaviorSubject<number>;
 
+  subs: Subscription[] = [];
   public searchResults = new BehaviorSubject<Array<FilmLocationSchema>>([]);
-  public selectedResult = new Observable<FilmLocationSchema>();
+  public selectedResult = new Subject<FilmLocationSchema>();
   public debounceTime = 0;
 
-  private sub: Subscription;
 
   @ViewChild(MatAutocomplete) autoComplete: MatAutocomplete;
 
@@ -40,30 +41,32 @@ export class LocationSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.sub = Observable
-      .combineLatest(
-      this.searchInput.valueChanges
-        .map((val) => {
-          this.skip.next(0);
-          return val;
+    this.subs.push(
+      Observable
+        .combineLatest(
+          this.searchInput.valueChanges
+            .map((val) => {
+              this.skip.next(0);
+              return val;
+            })
+            .debounceTime(this.debounceTime),
+          this.skip,
+          (searchText, skip) => {
+            return { searchText, skip };
+          })
+        .mergeMap(({ searchText, skip }) => this.searchLocations(searchText, skip)
+          .map(({ value }) => ({ skip, locations: value ? value.locations : [] })))
+        .map(m => {
+          if (m.skip > 0) {
+            this.searchResults.next(this.searchResults.value.concat(m.locations));
+          } else {
+            this.searchResults.next(m.locations);
+          }
         })
-        .debounceTime(this.debounceTime),
-      this.skip,
-      (searchText, skip) => {
-        return { searchText, skip };
-      })
-      .mergeMap(({ searchText, skip }) => this.searchLocations(searchText, skip)
-        .map(({ value }) => ({ skip, locations: value ? value.locations : [] })))
-      .map(m => {
-        if (m.skip > 0) {
-          this.searchResults.next(this.searchResults.value.concat(m.locations));
-        } else {
-          this.searchResults.next(m.locations);
-        }
-      })
-      .subscribe();
+        .subscribe()
+    );
 
-    this.selectedResult = this.autoComplete.optionSelected.map(c => c.option.value as FilmLocationSchema);
+    this.subs.push(this.autoComplete.optionSelected.subscribe(c => this.selectedResult.next(c.option.value as FilmLocationSchema)));
   }
 
   loadMore() {
@@ -79,6 +82,6 @@ export class LocationSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    this.subs.forEach(s => s.unsubscribe());
   }
 }

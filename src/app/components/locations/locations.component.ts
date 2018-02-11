@@ -1,8 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ViewChild, AfterViewInit } from '@angular/core';
-import { AgmMap, LatLngBoundsLiteral } from '@agm/core';
-import { AgmCircle } from '@agm/core/directives/circle';
-import { LatLngLiteral, GoogleMap } from '@agm/core/services/google-maps-types';
+import { Component, OnInit, ElementRef } from '@angular/core';
+import { ViewChild } from '@angular/core';
 import { debounce } from 'lodash';
 import {
   GetNearbyLocationsResponse,
@@ -14,8 +11,6 @@ import {
 import { Observable } from 'rxjs/Observable';
 import * as turf from '@turf/turf';
 import { GeoHelpers } from '../../services/geo-helpers.service';
-import { WindowRef } from '@agm/core/utils/browser-globals';
-import { GoogleMapsAPIWrapper } from '@agm/core/services/google-maps-api-wrapper';
 import { point } from '@turf/turf';
 import { MatButton } from '@angular/material';
 import { Subject } from 'rxjs/Subject';
@@ -24,93 +19,118 @@ import { Subscription } from 'rxjs/Subscription';
 import { OnDestroy } from '@angular/core';
 import { AppActions } from '../../app.store-actions';
 import { select } from '@angular-redux/store';
+import * as mapbox from 'mapbox-gl';
+import { environment } from '../../../environments/environment';
+import { MapboxMarker } from '../../models.ts/mapbox';
+import { MapboxComponent } from '../mapbox/mapbox.component';
+import { FormControl, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-locations',
   templateUrl: './locations.component.html',
   styleUrls: ['./locations.component.scss']
 })
-export class LocationsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class LocationsComponent implements OnInit, OnDestroy {
   lngLat = {
     lat: 37.743510,
     lng: -122.432504
   };
 
-  bounds: LatLngBoundsLiteral;
-  radius = 1000;
+  center = [this.lngLat.lng, this.lngLat.lat];
+
+  bounds: mapbox.LngLat;
+  radius: FormControl;
   zoom = 15;
 
   subs: Array<Subscription> = [];
-  map: Observable<GoogleMap>;
   selectedResult: FilmLocationSchema;
 
-  @ViewChild(AgmMap) agmMap: AgmMap;
+  @ViewChild(MapboxComponent) map: MapboxComponent;
   @ViewChild(LocationSearchComponent) locationSearch: LocationSearchComponent;
 
   click: Subject<void> = new Subject();
 
-  @select(['currentLocations']) points: Observable<FilmLocationSchema[]>;
+  @select(['currentLocations']) locations: Observable<FilmLocationSchema[]>;
+  @select(['currentRouteSolution']) routeSolution: Observable<SolveRoutingProblemResponse>;
 
-  route: Observable<google.maps.DirectionsRoute>;
-
-  constructor(private geoHelpers: GeoHelpers, private appActions: AppActions) { }
-
-  ngOnInit() {
-    this.agmMap.zoom = this.zoom;
-    this.agmMap.latitude = this.lngLat.lat;
-    this.agmMap.longitude = this.lngLat.lng;
-    this.agmMap.clickableIcons = false;
-    this.map = this.agmMap.mapReady.map(m => m);
-
-    this.locationSearch.debounceTime = 300;
-
-    this.subs.push(this.map.switchMap((map) =>
-      this.locationSearch.selectedResult.map(loc => {
-        this.appActions.loadLocations([]);
-        map.panTo(loc.coordinates);
-        map.setZoom(18);
-        this.selectedResult = loc;
-      })
-    ).subscribe());
+  constructor(private geoHelpers: GeoHelpers, private appActions: AppActions, private fb: FormBuilder) {
+    this.radius = this.fb.control(1000);
   }
 
-  getNearbyLocations(lngLat: LatLngLiteral, radius: number) {
+  ngOnInit() {
+    this.registerLocations();
+    this.registerMarkers();
+    this.registerSearch();
+    this.registerRoutingSolution();
+    this.appActions.setCenter(this.lngLat as any);
+  }
+
+  registerRoutingSolution() {
+    this.subs.push(
+      this.routeSolution.map(m => {
+        this.map.removeRoutes();
+        this.map.removeAllMarkers();
+
+        if (!m.locationsWithRouteCoordinates) {
+          return;
+        }
+        this.appActions.loadLocations(m.locationsWithRouteCoordinates);
+        this.map.drawRoutes(m.locationsWithRouteCoordinates);
+        this.appActions.loadLocations(m.locationsWithRouteCoordinates);
+
+        this.map.fitBounds();
+      })
+        .subscribe()
+    );
+  }
+
+  registerSearch() {
+    this.subs.push(
+      this.locationSearch.selectedResult
+        .map(l => {
+          this.map.removeAllMarkers();
+          this.map.removeRoutes();
+          this.map.addMarkers([this.makeMarker(l).panToSelf()]);
+        }).subscribe());
+  }
+
+  registerLocations() {
+    this.subs.push(this.map.centerChange
+      .switchMap(() => this.click).flatMap(() => {
+        this.map.removeAllMarkers();
+        this.map.removeRoutes();
+        this.appActions.setCenter(this.map.nativeMap.getCenter());
+        const center = this.map.nativeMap.getCenter();
+        const bounds = this.map.nativeMap.getBounds();
+        const radius = this.radius.value;
+        return this.getNearbyLocations(center, radius);
+      }).subscribe());
+  }
+
+  makeMarker(l: FilmLocationSchema) {
+    return new MapboxMarker({
+      position: [l.coordinates.lng, l.coordinates.lat],
+      data: l,
+      popupText: l.title,
+      pointType: 'location',
+      pointId: l.id,
+      pointSize: 30
+    });
+  }
+
+  registerMarkers() {
+    this.subs.push(this.locations.map(m => m.map(l => this.makeMarker(l))).map(markers => {
+      this.map.upsertMarkers(markers);
+    }).subscribe());
+  }
+
+  getNearbyLocations(lngLat: mapbox.LngLat, radius: number) {
     return Observable.fromPromise(new GetNearbyLocations({
       radius: radius,
       coordinates: lngLat
-    }).send());
-  }
-
-  ngAfterViewInit(): void {
-    this.subs.push(this.agmMap.mapReady.subscribe((map: GoogleMap) => {
-      this.prepareMap(map);
-      this.agmMap.centerChange.emit(this.lngLat);
-      this.showArea();
-    }));
-  }
-
-  prepareMap(map: GoogleMap) {
-    this.subs.push(this.agmMap.boundsChange
-      .switchMap(() => this.agmMap.centerChange)
-      .switchMap((lngLat) => this.click)
-      .flatMap(() => {
-        this.selectedResult = undefined;
-        const ne = map.getBounds().getNorthEast();
-        const c = map.getBounds().getCenter();
-
-        const r = turf.distance([c.lng(), ne.lat()], [c.lng(), c.lat()], { units: 'meters' });
-
-        const center = { lat: c.lat(), lng: c.lng() };
-
-        this.lngLat = center;
-
-        this.appActions.setCenter(center);
-
-        return this.getNearbyLocations(center, r).map(m => m.value ? m.value.locations : []);
-      })
-      .subscribe(c => {
-        this.appActions.loadLocations(c);
-      }));
+    }).send()).map(r => {
+      this.appActions.loadLocations(r.value.locations);
+    });
   }
 
   showArea() {

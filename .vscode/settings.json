@@ -2,9 +2,12 @@
   "tslint.autoFixOnSave": true,
   "cSpell.words": [
     "Injectable",
+    "Requestable",
     "bbox",
     "goldengate",
+    "mapbox",
     "tassign",
+    "upsert",
     "waypoints"
   ]
 }
