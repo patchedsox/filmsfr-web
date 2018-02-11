@@ -1,6 +1,6 @@
 export const environment = {
-  production: true,
+  production: false,
   apiUrl: 'localhost:3333',
   http: 'http://',
-  googleApiKey: 'AIzaSyAs2wOm-4Pz0VUSmJJXmkTrwhrbiGLG-B4'
+  mapboxToken: 'pk.eyJ1IjoiZy1tYW4iLCJhIjoiY2pkZzhzNm9vMGJ5ZzJ3bnoyd2NsaW12MCJ9.Ujhx7KNL5irrxpCOFS3wAA'
 };

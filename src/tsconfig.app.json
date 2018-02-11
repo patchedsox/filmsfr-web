@@ -8,8 +8,7 @@
   },
   "include": [
     "../types/**/*.ts",
-    "./**/*.ts",
-    "../node_modules/agm-direction/src/agm-direction.module.ts"
+    "./**/*.ts"
   ],
   "exclude": [
     "test.ts",
