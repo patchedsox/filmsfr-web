@@ -7,8 +7,8 @@ describe('filmsfr-web App', () => {
     page = new AppPage();
   });
 
-  it('should display welcome message', () => {
+  it('should display find button', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to app!');
+    expect(page.getButtonText()).toEqual('Plan a route from most optimal 11 points');
   });
 });

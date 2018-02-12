@@ -3,7 +3,7 @@ import { Subject } from 'rxjs/Subject';
 import { Map } from 'mapbox-gl';
 import * as mapbox from 'mapbox-gl';
 import { environment } from '../../../environments/environment';
-import { MapboxMarker } from '../../models.ts/mapbox';
+import { MapboxMarker } from '../../models/mapbox';
 import * as cheapRuler from 'cheap-ruler';
 import { Observable } from 'rxjs/Observable';
 import { FilmLocationSchema } from 'goldengate24k';
@@ -194,8 +194,11 @@ export class MapboxComponent implements OnInit {
     }
   }
 
-  private runDownMarkers() {
+  private runDownMarkers(type?: string) {
     Object.keys(this.currentMarkersHash).forEach(key => {
+      if (type !== undefined && this.currentMarkersHash[key].marker.props.pointType !== type) {
+        return;
+      }
       if (--this.currentMarkersHash[key].count === -1) {
         this.currentMarkersHash[key].marker.remove();
         delete this.currentMarkersHash[key];
@@ -209,8 +212,8 @@ export class MapboxComponent implements OnInit {
     });
   }
 
-  removeAllMarkers() {
-    this.runDownMarkers();
+  removeAllMarkers(type?: string) {
+    this.runDownMarkers(type);
   }
 
   upsertMarkers(markers: MapboxMarker<any>[]) {

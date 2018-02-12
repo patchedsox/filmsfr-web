@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LocationSearchComponent } from './location-search.component';
+import { SharedModule } from '../../shared/shared.module';
 
 describe('LocationSearchComponent', () => {
   let component: LocationSearchComponent;
@@ -8,7 +9,7 @@ describe('LocationSearchComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LocationSearchComponent ]
+      imports: [SharedModule]
     })
     .compileComponents();
   }));

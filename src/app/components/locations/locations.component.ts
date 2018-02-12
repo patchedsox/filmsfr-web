@@ -21,7 +21,7 @@ import { AppActions } from '../../app.store-actions';
 import { select } from '@angular-redux/store';
 import * as mapbox from 'mapbox-gl';
 import { environment } from '../../../environments/environment';
-import { MapboxMarker } from '../../models.ts/mapbox';
+import { MapboxMarker } from '../../models/mapbox';
 import { MapboxComponent } from '../mapbox/mapbox.component';
 import { FormControl, FormBuilder } from '@angular/forms';
 
@@ -47,6 +47,8 @@ export class LocationsComponent implements OnInit, OnDestroy {
 
   @ViewChild(MapboxComponent) map: MapboxComponent;
   @ViewChild(LocationSearchComponent) locationSearch: LocationSearchComponent;
+
+  showingRoutingResult = false;
 
   click: Subject<void> = new Subject();
 
@@ -79,6 +81,8 @@ export class LocationsComponent implements OnInit, OnDestroy {
         this.appActions.loadLocations(m.locationsWithRouteCoordinates);
 
         this.map.fitBounds();
+
+        this.showingRoutingResult = true;
       })
         .subscribe()
     );
@@ -91,14 +95,18 @@ export class LocationsComponent implements OnInit, OnDestroy {
           this.map.removeAllMarkers();
           this.map.removeRoutes();
           this.map.addMarkers([this.makeMarker(l).panToSelf()]);
+          this.showingRoutingResult = false;
         }).subscribe());
   }
 
   registerLocations() {
     this.subs.push(this.map.centerChange
       .switchMap(() => this.click).flatMap(() => {
-        this.map.removeAllMarkers();
-        this.map.removeRoutes();
+        if (this.showingRoutingResult) {
+          this.map.removeAllMarkers();
+          this.map.removeRoutes();
+          this.showingRoutingResult = false;
+        }
         this.appActions.setCenter(this.map.nativeMap.getCenter());
         const center = this.map.nativeMap.getCenter();
         const bounds = this.map.nativeMap.getBounds();

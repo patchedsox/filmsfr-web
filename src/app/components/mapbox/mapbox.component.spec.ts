@@ -8,14 +8,16 @@ describe('MapboxComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MapboxComponent ]
+      declarations: [MapboxComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MapboxComponent);
     component = fixture.componentInstance;
+    component.center = [0, 0];
+    component.zoom = 15;
     fixture.detectChanges();
   });
 
