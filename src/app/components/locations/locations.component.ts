@@ -65,6 +65,7 @@ export class LocationsComponent implements OnInit, OnDestroy {
     this.registerSearch();
     this.registerRoutingSolution();
     this.appActions.setCenter(this.lngLat as any);
+    this.locationSearch.debounceTime = 300;
   }
 
   registerRoutingSolution() {
