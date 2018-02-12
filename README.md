@@ -29,6 +29,9 @@ To run the project in a simple docker container, use:
 yarn up
 ```
 
+##### Note: 
+with ```yarn up``` it is served on localhost:8080
+
 ## Ideas
 
 #### Current features:
