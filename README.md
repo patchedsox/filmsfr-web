@@ -30,7 +30,7 @@ yarn up
 ```
 
 ##### Note: 
-with ```yarn up``` it is served on localhost:80
+with ```yarn up``` it is served on localhost:8080
 
 ## Ideas
 
