@@ -98,6 +98,8 @@ In this project, you can find:
 - Modular approach
 
 Awaiting improvements are:
+- Server side rendering for SEO
+- Making website friendly for search engine crawlers
 - Improved test configuration
 - Separation of representation logic between route planner and locations
 - Global test configurations
